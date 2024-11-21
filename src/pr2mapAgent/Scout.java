@@ -30,6 +30,7 @@ public class Scout extends Agent {
         Object[] args = getArguments();
 
         if (args != null && args.length > 0) {
+            energy = -2;
             targetPos = ((int[]) args[1]).clone();
             env = (Environment) args[2];
             setCurrentPos(((int[]) args[0]).clone());

@@ -125,32 +125,20 @@ public class GridLayoutManager extends JFrame implements PositionListener {
             return;
         }
 
-//        Timer timer = new Timer(500, null);
-
-//        timer.addActionListener(e -> {
             if (targetReached) {
-                JOptionPane.showMessageDialog(null, "Raccoon reached the target with an energy of " + energy + ".");
                 squares[currentPos[1]][currentPos[0]].setTarget(false);
-                squares[currentPos[1]][currentPos[0]].setRaccoon(false);
+                squares[oldPos[1]][oldPos[0]].setRaccoon(false);
+                squares[currentPos[1]][currentPos[0]].setRaccoon(true);
                 gridPanel.repaint();
+                JOptionPane.showMessageDialog(null, "Raccoon reached the target with an energy of " + energy + ".");
 
             } else if (!Arrays.equals(oldPos, currentPos)) {
                 System.out.println("Agent moved from [" + oldPos[0] + ", " + oldPos[1] + "] to [" + currentPos[0] + ", " + currentPos[1] + "]");
                 squares[oldPos[1]][oldPos[0]].setRaccoon(false);
+                squares[currentPos[1]][currentPos[0]].setRaccoon(true);
+                gridPanel.repaint();
             }
-            squares[currentPos[1]][currentPos[0]].setRaccoon(true);
-            gridPanel.repaint();
-//        });
-
-//        try {
-//            Thread.sleep(300);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        timer.start();
     }
-
-
 
     private void resetPositions() {
         startSet = false;

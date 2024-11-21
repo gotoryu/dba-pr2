@@ -21,14 +21,21 @@ public class Main {
         };
 
         //show the list of map choices
-        String selectedFile = (String) JOptionPane.showInputDialog(
+//        String selectedFile = (String) JOptionPane.showInputDialog(
+//                null,
+//                "Choose the map file:",
+//                "Choose map",
+//                JOptionPane.PLAIN_MESSAGE,
+//                null,
+//                mapFiles,
+//                mapFiles[0]
+//        );
+
+        String selectedFile = JOptionPane.showInputDialog(
                 null,
-                "Choose the map file:",
+                "Enter the map file path (e.g., 'maps/mapWithDiagonalWall.txt'):",
                 "Choose map",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                mapFiles,
-                mapFiles[0]
+                JOptionPane.PLAIN_MESSAGE
         );
 
         if (selectedFile != null && !selectedFile.isEmpty()) {

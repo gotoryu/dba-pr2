@@ -7,12 +7,18 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ContainerController;
 import jade.core.Agent;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Scout extends Agent {
 
     Environment env;
     int energy;
     int[] currentPos;
     int[] targetPos;
+
+    private final List<PositionListener> listeners = new ArrayList<>(); // Observer list
 
     public Scout() {
         super();
@@ -24,10 +30,13 @@ public class Scout extends Agent {
         Object[] args = getArguments();
 
         if (args != null && args.length > 0) {
-            currentPos = ((int[]) args[0]).clone();
             targetPos = ((int[]) args[1]).clone();
             env = (Environment) args[2];
+            setCurrentPos(((int[]) args[0]).clone());
             System.out.println("Agent started with argument: Start - " + currentPos[0] + ", " + currentPos[1] + ", End - " + targetPos[0] + ", " + targetPos[1]);
+
+            PositionListener glm = (PositionListener) args[3];
+            addPositionListener(glm);
         } else {
             System.out.println("No arguments provided.");
         }
@@ -40,16 +49,15 @@ public class Scout extends Agent {
         return energy;
     }
 
-    void incrementEnergy(int energy) {
-        this.energy++;
-    }
-
     int[] getCurrentPos() {
         return currentPos;
     }
 
-    void setCurrentPos(int[] currentPos) {
-        this.currentPos = currentPos;
+    void setCurrentPos(int[] newPos) {
+        energy++;
+        int[] oldPos = currentPos;
+        this.currentPos = newPos;
+        notifyPositionListeners(oldPos, newPos);
     }
 
     int[] getTargetPos() {
@@ -78,4 +86,24 @@ public class Scout extends Agent {
         }
     }
 
+    public void addPositionListener(PositionListener listener) {
+        listeners.add(listener);
+    }
+
+    // Entfernen eines Listeners
+    public void removePositionListener(PositionListener listener) {
+        listeners.remove(listener);
+    }
+
+    // Benachrichtigung der Listener
+    private void notifyPositionListeners(int[] oldPos, int[] currentPos) {
+        for (PositionListener listener : listeners) {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            listener.onPositionUpdated(oldPos, currentPos, Arrays.equals(currentPos, targetPos), energy);
+        }
+    }
 }

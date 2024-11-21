@@ -2,6 +2,8 @@ package pr2mapAgent;
 import jade.core.behaviours.Behaviour;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 
 public class WalkBehaviour extends Behaviour {
 
@@ -14,9 +16,10 @@ public class WalkBehaviour extends Behaviour {
     Node current;
     Node target;
     HeuristicHandler hh;
-
+    private boolean goalReached;
 
     public WalkBehaviour(Scout scout, Environment env) {
+        this.goalReached = false;
         this.scout = scout;
         this.env = env;
 
@@ -34,14 +37,19 @@ public class WalkBehaviour extends Behaviour {
     @Override
     public void action() {
         if (!current.equals(target) && !waitingForStep) {
-            scout.addBehaviour(new StepBehaviour(this/*, current, target, lastVisitiedNodes, env, hh*/));
+            scout.setCurrentPos(new int[]{current.x, current.y});
+            scout.addBehaviour(new StepBehaviour(this));
+            waitingForStep = true;
+        } else if (current.equals(target) && !waitingForStep) {
+            scout.setCurrentPos(new int[]{current.x, current.y});
+            goalReached = true;
             waitingForStep = true;
         }
     }
 
     @Override
     public boolean done() {
-        return current.equals(target);
+        return goalReached;
     }
 
     public void notifyStepComplete() {

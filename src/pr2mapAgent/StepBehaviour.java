@@ -3,38 +3,37 @@ package pr2mapAgent;
 import jade.core.behaviours.OneShotBehaviour;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class StepBehaviour extends OneShotBehaviour {
 
-    private WalkBehaviour aStarData;
+    private WalkBehaviour wb;
 
     public StepBehaviour(WalkBehaviour wb) {
-        this.aStarData = wb;
+        this.wb = wb;
     }
 
     @Override
     public void action() {
-        discoverArea(aStarData.current);
+        discoverArea(wb.current);
 
 //        printHeuristic(aStarData.current);
-        printKnownGrid(aStarData.current);
+        printKnownGrid(wb.current);
         System.out.println("------------------------------------------");
 
         // Get the best neighbor for the next move
-        Node nextMove = getBestStep(aStarData.current);
+        Node nextMove = getBestStep(wb.current);
 
-        Node last = aStarData.current;
-        aStarData.current = nextMove;
-        aStarData.hh.penalizeDynamically(aStarData.current, last, aStarData.lastVisitiedNodes);
+        Node last = wb.current;
+        wb.current = nextMove;
+        wb.hh.penalizeDynamically(wb.current, last, wb.lastVisitiedNodes);
         updateRecentVisits(last);
-        aStarData.notifyStepComplete();
+        wb.notifyStepComplete();
     }
 
     //adds currentNode as well as all of his Neighbors to the graph and sets the Neighbors of currentNode
     private void discoverArea(Node currentNode) {
-        aStarData.env.setNode(currentNode.x, currentNode.y, currentNode);
+        wb.env.setNode(currentNode.x, currentNode.y, currentNode);
 
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
@@ -42,19 +41,19 @@ public class StepBehaviour extends OneShotBehaviour {
             int nx = currentNode.x + dir[0];
             int ny = currentNode.y + dir[1];
 
-            if (aStarData.env.isInBounds(nx, ny)) {
+            if (wb.env.isInBounds(nx, ny)) {
                 Node neighborNode = null;
-                if (!aStarData.env.yetDiscovered(nx, ny)) {
-                    boolean isObstacle = aStarData.env.see(aStarData.current, nx, ny) == -1;
+                if (!wb.env.yetDiscovered(nx, ny)) {
+                    boolean isObstacle = wb.env.see(wb.current, nx, ny) == -1;
                     neighborNode = new Node(nx, ny, isObstacle);
-                    aStarData.env.setNode(nx, ny, neighborNode);
+                    wb.env.setNode(nx, ny, neighborNode);
                 }
-                neighborNode = aStarData.env.getNode(nx, ny);
-                neighborNode.setHCost(aStarData.hh.manhattan(neighborNode));
+                neighborNode = wb.env.getNode(nx, ny);
+                neighborNode.setHCost(wb.hh.manhattan(neighborNode));
                 neighborNode.setGCost(1);
 
                 currentNode.addNeighbor(neighborNode);
-                aStarData.env.setNode(nx, ny, neighborNode);
+                wb.env.setNode(nx, ny, neighborNode);
             }
         }
     }
@@ -77,7 +76,7 @@ public class StepBehaviour extends OneShotBehaviour {
                 bestNeighbor = neighbor;
             }
             else if(fCost == lowestFCost) {
-                bestNeighbor = aStarData.hh.euclidean(neighbor) < aStarData.hh.euclidean(bestNeighbor) ? neighbor : bestNeighbor;
+                bestNeighbor = wb.hh.euclidean(neighbor) < wb.hh.euclidean(bestNeighbor) ? neighbor : bestNeighbor;
             }
         }
 
@@ -98,25 +97,25 @@ public class StepBehaviour extends OneShotBehaviour {
     }
 
     private void updateRecentVisits(Node current) {
-        aStarData.lastVisitiedNodes.addFirst(current); // Add the current node to recent visits
-        if (aStarData.lastVisitiedNodes.size() > aStarData.hh.getMaxRecentVisits()) {
-            aStarData.lastVisitiedNodes.removeLast(); // Remove the oldest node if we exceed the limit
+        wb.lastVisitiedNodes.addFirst(current); // Add the current node to recent visits
+        if (wb.lastVisitiedNodes.size() > wb.hh.getMaxRecentVisits()) {
+            wb.lastVisitiedNodes.removeLast(); // Remove the oldest node if we exceed the limit
         }
     }
 
 
     private void printKnownGrid(Node currentNode) {
-        for (int ny = 0; ny < aStarData.env.getHeight(); ny++) {
-            for (int nx = 0; nx < aStarData.env.getWidth(); nx++) {
+        for (int ny = 0; ny < wb.env.getHeight(); ny++) {
+            for (int nx = 0; nx < wb.env.getWidth(); nx++) {
                 if (ny == currentNode.y && nx == currentNode.x) {
                     System.out.print("A  ");
                 }
-                else if (ny == aStarData.target.y && nx == aStarData.target.x) {
+                else if (ny == wb.target.y && nx == wb.target.x) {
                     System.out.print("T  ");
                 }
-                else if (!aStarData.env.yetDiscovered(nx, ny) || !aStarData.env.getNode(nx, ny).isObstacle) {
+                else if (!wb.env.yetDiscovered(nx, ny) || !wb.env.getNode(nx, ny).isObstacle) {
                     System.out.print(".  ");
-                } else if (aStarData.env.yetDiscovered(nx, ny)) {
+                } else if (wb.env.yetDiscovered(nx, ny)) {
                     System.out.print("#  ");
                 } else {
                     System.out.print("   ");
@@ -128,28 +127,26 @@ public class StepBehaviour extends OneShotBehaviour {
     }
 
     private void printHeuristic(Node currentNode) {
-        for (int ny = 0; ny < aStarData.env.getHeight(); ny++) {
-            for (int nx = 0; nx < aStarData.env.getWidth(); nx++) {
-                if (ny == aStarData.target.y && nx == aStarData.target.x) {
+        for (int ny = 0; ny < wb.env.getHeight(); ny++) {
+            for (int nx = 0; nx < wb.env.getWidth(); nx++) {
+                if (ny == wb.target.y && nx == wb.target.x) {
                     System.out.print("T    ");
                 }
                 else if (ny == currentNode.y && nx == currentNode.x) {
                     System.out.printf("%c%-2d%c ", '[', currentNode.fCost(), ']');
                 }
-                else if (!aStarData.env.yetDiscovered(nx, ny)) {
+                else if (!wb.env.yetDiscovered(nx, ny)) {
                     System.out.print(".    ");
                 }
-                else if (aStarData.env.getNode(nx, ny).isObstacle) {
+                else if (wb.env.getNode(nx, ny).isObstacle) {
                     System.out.print("#    ");
                 }
                 else {
-                    System.out.printf("%-5d", aStarData.env.getNode(nx, ny).fCost());
+                    System.out.printf("%-5d", wb.env.getNode(nx, ny).fCost());
                 }
             }
             System.out.println();
         }
         System.out.println();
     }
-
-
 }

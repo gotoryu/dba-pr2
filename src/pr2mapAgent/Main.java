@@ -4,7 +4,10 @@ import javax.swing.*;
 import java.io.FileNotFoundException;
 
 public class Main {
+
     public static void main(String[] args) {
+
+
         // List of the maps
         String[] mapFiles = {
                 "maps/mapWithDiagonalWall.txt",
@@ -28,7 +31,6 @@ public class Main {
                 mapFiles[0]
         );
 
-
         if (selectedFile != null && !selectedFile.isEmpty()) {
             //if a map is chosen
             Map map = new Map(selectedFile);
@@ -48,7 +50,7 @@ public class Main {
             System.out.println("Start [" + glm.getStartPos()[0] + ", " + glm.getStartPos()[1] + "]");
             System.out.println("Target [" + glm.getEndPos()[0] + ", " + glm.getEndPos()[1] + "]");
 
-            Object[] arguments = {glm.getStartPos(), glm.getEndPos(), env};
+            Object[] arguments = {glm.getStartPos(), glm.getEndPos(), env, glm};
             Scout raccoon = new Scout();
 
             raccoon.startAgent(arguments);

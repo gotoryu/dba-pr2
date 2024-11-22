@@ -1,6 +1,7 @@
 package pr2mapAgent;
 
 import javax.swing.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Main {
@@ -31,36 +32,59 @@ public class Main {
 //                mapFiles[0]
 //        );
 
-        String selectedFile = JOptionPane.showInputDialog(
-                null,
-                "Enter the map file path (e.g., 'maps/mapWithDiagonalWall.txt'):",
-                "Choose map",
-                JOptionPane.PLAIN_MESSAGE
-        );
+//        String selectedFile = JOptionPane.showInputDialog(
+//                null,
+//                "Enter the map file path (e.g., 'maps/mapWithDiagonalWall.txt'):",
+//                "Choose map",
+//                JOptionPane.PLAIN_MESSAGE
+//        );
 
-        if (selectedFile != null && !selectedFile.isEmpty()) {
-            //if a map is chosen
-            Map map = new Map(selectedFile);
-            Environment env = new Environment(map.getWidth(), map.getHeight(), map);
+        JFileChooser fileChooser = new JFileChooser();
 
-            GridLayoutManager glm = new GridLayoutManager(map);
+        File defaultDirectory = new File("maps"); // Replace with your desired directory
+        if (defaultDirectory.exists() && defaultDirectory.isDirectory()) {
+            fileChooser.setCurrentDirectory(defaultDirectory);
+        } else {
+            // Fallback to user's home directory if the specified directory doesn't exist
+            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
+        }
 
-            while (!glm.positionsSet()) {
-                try {
-                    Thread.sleep(1); // Wait for 1 millisecond
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Handle interrupt
-                    break;
+        fileChooser.setDialogTitle("Choose a map file");
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int result = fileChooser.showOpenDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+
+            try {
+                //if a map is chosen
+                Map map = new Map(selectedFile.getAbsolutePath());
+                Environment env = new Environment(map.getWidth(), map.getHeight(), map);
+
+                GridLayoutManager glm = new GridLayoutManager(map);
+
+                while (!glm.positionsSet()) {
+                    try {
+                        Thread.sleep(1); // Wait for 1 millisecond
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // Handle interrupt
+                        break;
+                    }
                 }
+
+                System.out.println("Start [" + glm.getStartPos()[0] + ", " + glm.getStartPos()[1] + "]");
+                System.out.println("Target [" + glm.getEndPos()[0] + ", " + glm.getEndPos()[1] + "]");
+
+                Object[] arguments = {glm.getStartPos(), glm.getEndPos(), env, glm};
+                Scout raccoon = new Scout();
+
+                raccoon.startAgent(arguments);
             }
-
-            System.out.println("Start [" + glm.getStartPos()[0] + ", " + glm.getStartPos()[1] + "]");
-            System.out.println("Target [" + glm.getEndPos()[0] + ", " + glm.getEndPos()[1] + "]");
-
-            Object[] arguments = {glm.getStartPos(), glm.getEndPos(), env, glm};
-            Scout raccoon = new Scout();
-
-            raccoon.startAgent(arguments);
+            catch (Exception e) {
+                // Handle exceptions such as file not found or invalid file format
+                JOptionPane.showMessageDialog(null, "An error occurred while processing the map file:\n" + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
 
         } else {
             // if the user chancel the choice the program is finished

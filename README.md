@@ -1,6 +1,6 @@
 # Autonomous Agent Pathfinding in JADE
 
-> An intelligent multi agent system simulation where an autonomous agent navigates unknown 2D environments using heuristic search algorithms.
+> An intelligent multi agent system where an autonomous agent navigates unknown 2D environments using **heuristic search algorithms**.
 
 ![Java](https://img.shields.io/badge/Java-21-orange) ![JADE](https://img.shields.io/badge/Framework-JADE-blue)
 ## Overview
@@ -8,6 +8,8 @@
 This project implements a **reactive agent with internal state** moving through a 2D grid map whilst navigating around objects. Unlike usual pathfinding implementations (Dijkstra or global A*), this agent has limited perception and discovers the map in real-time.
 
 Developed as part of the *Desarrollo Basado en Agentes* course at the *Universidad de Granada*.
+The project lays the foundation for assignment 3 where the actual multi-agent system is implemented. 
+For more information on assignment 3 see: https://github.com/gotoryu/dba-pr3.
 
 ### The Challenge
 The agent (represented by a raccoon) must find the shortest path to the target (a trash bin) while:
@@ -50,7 +52,7 @@ The agent (represented by a raccoon) must find the shortest path to the target (
     ```
 
 2.  **Configuration**
-    Ensure the JADE library is added to your classpath. If you are using Intellij IDEA for example: Go to File --> Project Structure --> Libraries --> New Project Library --> add your jade.jar
+    Ensure the JADE library is added to your classpath. If you are using IntelliJ IDEA for example: Go to: File → Project Structure → Libraries → New Project Library → add your `jade.jar`.
 
 3.  **Run the Simulation**
     Execute the `pr2mapAgent.Main` class.

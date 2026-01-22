@@ -40,10 +40,10 @@ public class GridLayoutManager extends JFrame implements PositionListener {
 
         // Load images for cells
         try {
-            grassImage = ImageIO.read(new File("grass.png"));
-            raccoonImage = ImageIO.read(new File("raccoon2.png"));
-            obstacleImage = ImageIO.read(new File("wall.png"));
-            endImage = ImageIO.read(new File("stink.png"));
+            grassImage = ImageIO.read(new File("img/grass.png"));
+            raccoonImage = ImageIO.read(new File("img/raccoon2.png"));
+            obstacleImage = ImageIO.read(new File("img/wall.png"));
+            endImage = ImageIO.read(new File("img/stink.png"));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
